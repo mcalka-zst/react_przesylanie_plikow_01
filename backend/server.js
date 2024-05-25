@@ -16,17 +16,10 @@ const storage = multer.diskStorage({
     },
     filename: function(req, file,cb){
         //nazwa pliku, która ma być użyta
-        cb(null, Date.now()+"-"+file.originalname)
+        cb(null, Date.now()+"_"+file.originalname); //dodaję przed oryginalną nazwą datę (aby nazwy się nie powtarzały)
     }
 })
-//filtrowanie, aby były tylko plik jpg i png
-const fileFiter = (req, file, cb)=>{
-    if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
-    cb(null, true);
-  } else {
-    cb(new Error('Nieprawidłowy typ pliku. Dozwolone są tylko pliki JPG i PNG.'), false);
-  }
-}
+
 //tworzenie instancji multera
 const upload = multer({storage:storage});
 
@@ -34,7 +27,7 @@ const upload = multer({storage:storage});
 app.post('/upload', upload.single('file'), (req, res)=>{
     // req.file zawiera informacje o przesłanym pliku
     console.log("Przesłano "+req.file.filename);
-    res.json({ message: 'Plik został przesłany pomyślnie!', file: req.file });
+    res.json({ message: 'Plik został przesłany pomyślnie!' });
 })
 
 //-------------------------------------------------

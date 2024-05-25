@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import "./App.css";
 
 const App = () => {
   const [file, setFile] = useState(null);
+  const [message, setMessage] = useState(null);
+
+  const fileInputRef = useRef(null);
 
   const handleFileChange = (e) => {
     // tablica e.target.files jest dostępna w zdarzeniu zmiany (change event) dla elementu <input type="file">
@@ -10,42 +13,45 @@ const App = () => {
     setFile(selectedFile);
   };
 
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     //Wysyłanie pliku
-    if(!file){
-      console.log('Brak wybranego pliku');
+    if (!file) {
+      setMessage("Wybierz plik!!!");
       return;
     }
     const formData = new FormData();
-    formData.append('file', file);
-    try{
+    formData.append("file", file);
+    try {
       const response = await fetch("http://localhost:3001/upload", {
-        method:'POST',
-        body:formData
+        method: "POST",
+        body: formData,
       });
-      if(!response.ok){
+      if (!response.ok) {
         throw new Error("Błąd podczas przesyłania pliku");
       }
-      const data = await response.json();
-      console.log(data)
+      const res = await response.json();
+      setFile(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''; // Resetuje pole pliku
+      }
+      setMessage(res.message);
+     
+    } catch (err) {
+      setMessage("Błąd: ", err);
     }
-    catch (err){
-      console.error('Błąd: ', err)
-    }
-    
-
   };
 
   return (
     <main>
-      <h1>Wyślij jakiś obrazek</h1>
+      <h1>Wyślij mi jakiś plik</h1>
       <form onSubmit={handleSubmit}>
-        <input type="file" onChange={handleFileChange} />
+        <input type="file" onChange={handleFileChange} ref={fileInputRef} />
         <br />
         <br />
         <button type="submit">Wyślij obraz</button>
       </form>
+      <p>{message}</p>
     </main>
   );
 };
