@@ -49,7 +49,7 @@ const App = () => {
         <input type="file" onChange={handleFileChange} ref={fileInputRef} />
         <br />
         <br />
-        <button type="submit">Wyślij obraz</button>
+        <button type="submit">Wyślij plik</button>
       </form>
       <p>{message}</p>
     </main>
